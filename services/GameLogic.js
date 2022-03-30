@@ -62,7 +62,7 @@ exports.updateCards = (cardsInPlay, deck, set) => {
     } else {
       throw new Error("Invalid set");
     }
-  }
+  };
   if (deck.length === 0) {
     return [setRemoved, deck, isGameOver];
   } else {
@@ -70,10 +70,7 @@ exports.updateCards = (cardsInPlay, deck, set) => {
   }
 };
 
-
-
 function dealCards(cardsInPlay, deck) {
-  
   let updatedCards = [];
   let isGameOver = false;
   let updatedDeck = [];
@@ -83,7 +80,7 @@ function dealCards(cardsInPlay, deck) {
     return combos.find((combo) => {
       return checkForSets([...cardsInPlay, ...combo]);
     });
-  }
+  };
 
   if (deck.length <= 3) {
     updatedCards = [...cardsInPlay, ...deck];
@@ -109,8 +106,6 @@ function dealCards(cardsInPlay, deck) {
   return [updatedCards, updatedDeck, isGameOver];
 }
 
-
-
 //--------- Game Logic ----------//
 
 //Returns true if array of 3 cards submitted is a valid set
@@ -131,8 +126,8 @@ function checkSet(cards) {
 }
 
 exports.verifySet = (cards) => {
-  checkSet(cards)
-}
+  checkSet(cards);
+};
 
 //Returns true if array of cards submitted contains at least one set
 function checkForSets(cards) {
