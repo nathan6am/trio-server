@@ -1,13 +1,27 @@
 const express = require("express");
-const http = require("http");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+
 const app = express();
-const server = http.createServer(app);
-const socket = require("socket.io");
-const port = 8000;
-const io = socket(server);
+const httpServer = createServer(app);
+const registerLobbyHandlers = require("./services/LobbyHandler.js");
 
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*", //your website origin
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
 
-const lobbies = {};
+io.on("connection", (socket) => {
+  console.log("new connection");
+  socket.on("user:setDisplayName", (displayName) => {
+    console.log(displayName);
+  });
+  registerLobbyHandlers(io, socket);
+});
 
-server.listen(port, () => console.log(`server is listening on port ${port}`));
-
+httpServer.listen(8000, () => {
+  console.log("listening on port 8000");
+});

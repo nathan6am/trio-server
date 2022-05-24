@@ -53,7 +53,15 @@ exports.newDeck = (customDeckOptions = {}) => {
 };
 
 //Removes the set to score from the cards in play and deals cards, returns an array [updatedCardsInPlay, updatedDeck, isGameOver]
-exports.updateCards = (cardsInPlay, deck, set) => {
+function returnToDeck(deck, set) {
+  return shuffle(deck.push(set));
+}
+//Removes the set to score from the cards in play and deals cards, returns an array [updatedCardsInPlay, updatedDeck, isGameOver]
+exports.updateCards = (cardsInPlay, deck, set, returnSetToDeck) => {
+  let updatedDeck = deck;
+  if (returnSetToDeck) {
+    updatedDeck = returnToDeck(deck, set);
+  }
   let setRemoved = removeSet(cardsInPlay, set);
   let isGameOver = checkForSets(setRemoved);
   const removeSet = (cardsInPlay, set) => {
@@ -66,7 +74,7 @@ exports.updateCards = (cardsInPlay, deck, set) => {
   if (deck.length === 0) {
     return [setRemoved, deck, isGameOver];
   } else {
-    return dealCards(setRemoved, deck);
+    return dealCards(setRemoved, updatedDeck);
   }
 };
 
@@ -126,7 +134,7 @@ function checkSet(cards) {
 }
 
 exports.verifySet = (cards) => {
-  checkSet(cards);
+  return checkSet(cards);
 };
 
 //Returns true if array of cards submitted contains at least one set
