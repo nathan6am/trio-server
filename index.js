@@ -4,7 +4,7 @@ const { Server } = require("socket.io");
 
 const app = express();
 const httpServer = createServer(app);
-const registerLobbyHandlers = require("./services/LobbyHandler.js");
+const registerLobbyHandlers = require("./handlers/LobbyHandler.js");
 
 const io = new Server(httpServer, {
   cors: {

@@ -1,5 +1,5 @@
-const lobbyManager = require("./LobbyManager");
-const { newGame, updateGame } = require("./GameManager");
+const lobbyManager = require("../services/LobbyManager");
+const { newGame, updateGame } = require("../services/GameManager");
 module.exports = (io, socket) => {
   const createLobby = ({ user, options }, callback) => {
     let newLobby = lobbyManager.createLobby(user, options);
