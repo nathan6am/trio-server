@@ -14,6 +14,11 @@ const generateLobbyId = (activeLobbies) => {
 
 exports.createLobby = (user, options) => {
   const newLobby = {
+    //Store game options for restarting game
+    storedOptions: {
+      gameOptions: options.gameOptions,
+      deckOptions: options.deckOptions,
+    },
     id: generateLobbyId(),
     users: [{ ...user, isAdmin: true, ready: false }],
     game: newGame(options.gameOptions, options.deckOptions),
@@ -22,6 +27,20 @@ exports.createLobby = (user, options) => {
   return newLobby;
 };
 
+exports.playAgian = (lobbyId) => {
+  const lobbyIndex = lobbies.findIndex((lobby) => lobby.id === lobbyId);
+
+  //Verify if lobby exists
+  if (lobbyIndex === -1)
+    throw new Error(`lobby with id ${lobbyId} does not exist`);
+
+  const updatedLobby = lobbies[lobbyIndex];
+  updatedLobby.gameActive = false;
+  updatedLobby.game = newGame(
+    updatedLobby.storedOptions.gameOptions,
+    updatedLobby.storedOptions.deckOptions
+  );
+};
 exports.joinLobby = (user, lobbyId) => {
   const lobbyIndex = lobbies.findIndex((lobby) => lobby.id === lobbyId);
 
@@ -47,7 +66,17 @@ exports.joinLobby = (user, lobbyId) => {
   lobbies[lobbyIndex] = updatedLobby;
   return lobbies[lobbyIndex];
 };
+exports.removeLobby = (lobbyId) => {
+  const lobbyIndex = lobbies.findIndex((lobby) => lobby.id === lobbyId);
 
+  //Verify if lobby exists
+  if (lobbyIndex === -1)
+    throw new Error(`lobby with id ${lobbyId} does not exist`);
+  const users = lobbies[lobbyIndex].users;
+  lobbies.splice(lobbyIndex, 1);
+  //return users to remove from room
+  return users;
+};
 exports.leaveLobby = (user, lobbyId) => {
   const lobbyIndex = lobbies.findIndex((lobby) => lobby.id === lobbyId);
 
@@ -65,11 +94,12 @@ exports.leaveLobby = (user, lobbyId) => {
     throw new Error(`user with id ${user.socketId} is not in this lobby`);
 
   //Remove user and return new lobby object
-  const updatedUsers = updatedLobby.users.fiter(
+  const updatedUsers = updatedLobby.users.filter(
     (existingUser) => user.socketId !== existingUser.socketId
   );
   updatedLobby.users = updatedUsers;
   lobbies[lobbyIndex] = updatedLobby;
+  console.log(lobbies[lobbyIndex]);
   return lobbies[lobbyIndex];
 };
 

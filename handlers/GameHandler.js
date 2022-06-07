@@ -10,12 +10,12 @@ module.exports = (io, socket) => {
     } else {
       callback(true);
       io.to(lobbyId).emit("lobby:update", updatedLobby);
-      if (game.timeLimit) {
+      if (game.options.timeLimit) {
         setTimeout(() => {
           let gameState = lobbyManager.getLobbyGameState(lobbyId);
           gameState.isOver = true;
           io.to(lobbyId).emit("game:time-limit-reached", gameState);
-        }, game.timeLimit * 1000);
+        }, (game.options.timeLimit + 5) * 1000);
       }
     }
   };

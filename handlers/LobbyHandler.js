@@ -38,21 +38,44 @@ module.exports = (io, socket) => {
 
   const leaveLobby = ({ user, lobbyId }, callback) => {
     try {
-      lobbyManager.leaveLobby(user, lobbyId);
+      const lobby = lobbyManager.getLobby(lobbyId);
+      const currentUser = lobby.users.find(
+        (el) => el.socketId === user.socketId
+      );
+
+      const userIsAdmin = currentUser?.isAdmin;
+
+      if (userIsAdmin) {
+        // Destroy the lobby is the admin leaves, emit "admin-left" and remove all connections from the room
+        lobbyManager.removeLobby(lobbyId);
+        callback(true);
+        const rooms = Array.from(socket.rooms);
+        if (rooms && rooms.length) {
+          rooms.forEach((room) => {
+            if (room !== socket.id) {
+              socket.leave(room);
+            }
+          });
+        }
+        io.to(lobbyId).emit("lobby:admin-left");
+        io.in(lobbyId).socketsLeave(lobbyId);
+      } else {
+        const updatedLobby = lobbyManager.leaveLobby(user, lobbyId);
+        const rooms = Array.from(socket.rooms);
+        if (rooms && rooms.length) {
+          rooms.forEach((room) => {
+            if (room !== socket.id) {
+              socket.leave(room);
+            }
+          });
+        }
+        io.to(lobbyId).emit("lobby:update", updatedLobby);
+        callback(true);
+      }
     } catch (e) {
       callback(false);
       console.error(e.message);
     }
-    const rooms = Array.from(socket.rooms);
-    if (rooms && rooms.length) {
-      rooms.forEach((room) => {
-        if (room !== socket.id) {
-          socket.leave(room);
-        }
-      });
-    }
-    io.to(lobbyId).emit("lobby:update", lobby);
-    callback(true);
   };
   const setGameOptions = ({ options, lobbyId }, callback) => {
     try {

@@ -1,7 +1,7 @@
 const { newDeck, updateCards, verifySet } = require("./GameLogic");
 
 exports.newGame = (gameOptions, deckOptions) => {
-  const [cardsInPlay, initialDeck] = newDeck(deckOptions);
+  const { cardsInPlay, initialDeck } = newDeck(deckOptions);
   const game = {
     options: gameOptions,
     cardsInPlay: cardsInPlay,

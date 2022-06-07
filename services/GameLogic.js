@@ -48,7 +48,7 @@ exports.newDeck = (customDeckOptions = {}) => {
   const initialSet = findSet(shuffledDeck);
   const initialDeck = shuffledDeck.filter((card) => !initialSet.includes(card));
   cardsInPlay = shuffle([...initialDeck.splice(0, 9), ...initialSet]);
-  return [cardsInPlay, initialDeck];
+  return { cardsInPlay, initialDeck };
 };
 
 //Removes the set to score from the cards in play and deals cards, returns an array [updatedCardsInPlay, updatedDeck, isGameOver]
