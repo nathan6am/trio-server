@@ -124,10 +124,17 @@ exports.startCurrentGame = (lobbyId) => {
     throw new Error(`lobby with id ${lobbyId} does not exist`);
 
   let updatedLobby = lobbies[lobbyIndex];
-  const users = updatedLobby.users
+  const timeLimit = updatedLobby.game.options.timeLimit;
+  const startTime = new Date();
+  startTime.setSeconds(startTime.getSeconds() + 5);
+  const endTime = new Date();
+  endTime.setSeconds(endTime.getSeconds() + timeLimit + 5);
+  const users = updatedLobby.users;
   const scores = users.map((user) => ({ user: user, score: 0 }));
   updatedLobby.game.scores = scores;
   updatedLobby["gameActive"] = true;
+  updatedLobby.game.startTime = startTime;
+  if (timeLimit) updatedLobby.game.endTime = endTime;
   return updatedLobby;
 };
 

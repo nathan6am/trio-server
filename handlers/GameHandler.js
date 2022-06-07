@@ -3,12 +3,20 @@ const { updateGame } = require("../services/GameManager");
 
 module.exports = (io, socket) => {
   const startGame = (lobbyId, callback) => {
-    const updatedLobby = lobbyManager.startCurrentGame(lobbyId, socket.id);
+    let updatedLobby = lobbyManager.startCurrentGame(lobbyId, socket.id);
+    const game = updatedLobby.game;
     if (!updatedLobby) {
       callback(false);
     } else {
       callback(true);
       io.to(lobbyId).emit("lobby:update", updatedLobby);
+      if (game.timeLimit) {
+        setTimeout(() => {
+          let gameState = lobbyManager.getLobbyGameState(lobbyId);
+          gameState.isOver = true;
+          io.to(lobbyId).emit("game:time-limit-reached", gameState);
+        }, game.timeLimit * 1000);
+      }
     }
   };
 

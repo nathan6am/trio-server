@@ -6,23 +6,22 @@ const defaultDeckOptions = {
   shapes: ["diamond", "squiggle", "oval"],
   fills: ["empty", "solid", "striped"],
 };
-
+const shuffle = (array) => {
+  var copy = [],
+    n = array.length,
+    i;
+  while (n) {
+    i = Math.floor(Math.random() * array.length);
+    if (i in array) {
+      copy.push(array[i]);
+      delete array[i];
+      n--;
+    }
+  }
+  return copy;
+};
 // returns an initial card setup for a game, 12 cards with at least one set and the remainining deck as [cardsInPlay, initialDeck]
 exports.newDeck = (customDeckOptions = {}) => {
-  const shuffle = (array) => {
-    var copy = [],
-      n = array.length,
-      i;
-    while (n) {
-      i = Math.floor(Math.random() * array.length);
-      if (i in array) {
-        copy.push(array[i]);
-        delete array[i];
-        n--;
-      }
-    }
-    return copy;
-  };
   const deckOptions = { ...defaultDeckOptions, ...customDeckOptions };
   const colors = deckOptions.colors;
   const shapes = deckOptions.shapes;
@@ -54,7 +53,7 @@ exports.newDeck = (customDeckOptions = {}) => {
 
 //Removes the set to score from the cards in play and deals cards, returns an array [updatedCardsInPlay, updatedDeck, isGameOver]
 function returnToDeck(deck, set) {
-  return shuffle(deck.push(set));
+  return shuffle([...deck, ...set]);
 }
 //Removes the set to score from the cards in play and deals cards, returns an array [updatedCardsInPlay, updatedDeck, isGameOver]
 exports.updateCards = (cardsInPlay, deck, set, returnSetToDeck) => {
