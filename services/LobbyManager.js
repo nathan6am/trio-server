@@ -15,7 +15,7 @@ const generateLobbyId = (activeLobbies) => {
 exports.createLobby = (user, options) => {
   const newLobby = {
     id: generateLobbyId(),
-    users: [{ ...user, isAdmin: true }],
+    users: [{ ...user, isAdmin: true, ready: false }],
     game: newGame(options.gameOptions, options.deckOptions),
   };
   lobbies.push(newLobby);
@@ -124,6 +124,13 @@ exports.startCurrentGame = (lobbyId) => {
     throw new Error(`lobby with id ${lobbyId} does not exist`);
 
   let updatedLobby = lobbies[lobbyIndex];
+  const users = updatedLobby.users
+  const scores = users.map((user) => ({ user: user, score: 0 }));
+  updatedLobby.game.scores = scores;
   updatedLobby["gameActive"] = true;
   return updatedLobby;
+};
+
+exports.getLobby = (lobbyId) => {
+  return lobbies.find((lobby) => (lobby.id = lobbyId));
 };

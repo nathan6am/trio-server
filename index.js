@@ -5,6 +5,7 @@ const { Server } = require("socket.io");
 const app = express();
 const httpServer = createServer(app);
 const registerLobbyHandlers = require("./handlers/LobbyHandler.js");
+const registerGameHandlers = require("./handlers/GameHandler.js");
 
 const io = new Server(httpServer, {
   cors: {
@@ -20,6 +21,7 @@ io.on("connection", (socket) => {
     console.log(displayName);
   });
   registerLobbyHandlers(io, socket);
+  registerGameHandlers(io, socket);
 });
 
 httpServer.listen(8000, () => {

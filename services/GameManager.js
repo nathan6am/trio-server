@@ -16,9 +16,11 @@ exports.updateGame = (game, setToScore, user) => {
   const cardsInPlay = game.cardsInPlay;
   const deck = game.deck;
   const mode = game.options.mode;
+
   if (!verifySet(setToScore)) throw new Error("Invalid set");
-  if (setToScore.every((card) => cardsInPlay.includes(card))) {
+  if (setToScore.every((card) => cardsInPlay.some((el) => el.id === card.id))) {
     const returnSetToDeck = mode !== "standard";
+    console.log(game.scores);
     const updatedScores = game.scores.map((entry) => {
       if (entry.user.socketId === user.socketId) {
         return {
@@ -29,12 +31,14 @@ exports.updateGame = (game, setToScore, user) => {
         return entry;
       }
     });
+    console.log(updatedScores);
     const [updatedCardsInPlay, updatedDeck, isGameOver] = updateCards(
       cardsInPlay,
       deck,
       setToScore,
       returnSetToDeck
     );
+
     return {
       ...game,
       cardsInPlay: updatedCardsInPlay,

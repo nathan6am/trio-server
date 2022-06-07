@@ -27,6 +27,7 @@ module.exports = (io, socket) => {
           }
         });
       }
+      io.to(lobbyId).emit("lobby:update", lobby);
       socket.join(lobbyId);
       console.log(socket.rooms);
       callback(lobby);
@@ -50,6 +51,7 @@ module.exports = (io, socket) => {
         }
       });
     }
+    io.to(lobbyId).emit("lobby:update", lobby);
     callback(true);
   };
   const setGameOptions = ({ options, lobbyId }, callback) => {

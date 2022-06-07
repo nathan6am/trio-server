@@ -62,15 +62,16 @@ exports.updateCards = (cardsInPlay, deck, set, returnSetToDeck) => {
   if (returnSetToDeck) {
     updatedDeck = returnToDeck(deck, set);
   }
-  let setRemoved = removeSet(cardsInPlay, set);
-  let isGameOver = checkForSets(setRemoved);
   const removeSet = (cardsInPlay, set) => {
     if (checkSet(set)) {
-      return cardsInPlay.filter((card) => !set.includes(card));
+      return cardsInPlay.filter((card) => !set.some((el) => el.id === card.id));
     } else {
       throw new Error("Invalid set");
     }
   };
+  let setRemoved = removeSet(cardsInPlay, set);
+  console.log(setRemoved.length);
+  let isGameOver = checkForSets(setRemoved);
   if (deck.length === 0) {
     return [setRemoved, deck, isGameOver];
   } else {
