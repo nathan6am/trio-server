@@ -91,7 +91,7 @@ exports.leaveLobby = (user, lobbyId) => {
       (existingUser) => user.socketId === existingUser.socketId
     )
   )
-    throw new Error(`user with id ${user.socketId} is not in this lobby`);
+    console.error(`user with id ${user.socketId} is not in this lobby`);
 
   //Remove user and return new lobby object
   const updatedUsers = updatedLobby.users.filter(
@@ -170,4 +170,10 @@ exports.startCurrentGame = (lobbyId) => {
 
 exports.getLobby = (lobbyId) => {
   return lobbies.find((lobby) => (lobby.id = lobbyId));
+};
+
+exports.findLobbyByUser = (socketId) => {
+  return lobbies.find((lobby) =>
+    lobby.users.some((user) => user.socketId === socketId)
+  );
 };
