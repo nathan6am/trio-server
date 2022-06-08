@@ -32,6 +32,7 @@ module.exports = (io, socket) => {
       console.log(socket.rooms);
       callback(lobby);
     } catch (e) {
+      callback(null);
       console.error(e.message);
     }
   };
