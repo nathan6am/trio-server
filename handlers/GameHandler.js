@@ -22,7 +22,7 @@ module.exports = (io, socket) => {
           });
           lobby.users = users;
           io.to(lobbyId).emit("game:ended", lobby);
-        }, (game.options.timeLimit + 5) * 1000);
+        }, (game.options.timeLimit + 10) * 1000);
       }
     }
   };

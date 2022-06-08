@@ -156,9 +156,9 @@ exports.startCurrentGame = (lobbyId) => {
   let updatedLobby = lobbies[lobbyIndex];
   const timeLimit = updatedLobby.game.options.timeLimit;
   const startTime = new Date();
-  startTime.setSeconds(startTime.getSeconds() + 5);
+  startTime.setSeconds(startTime.getSeconds() + 10);
   const endTime = new Date();
-  endTime.setSeconds(endTime.getSeconds() + timeLimit + 5);
+  endTime.setSeconds(endTime.getSeconds() + timeLimit + 10);
   const users = updatedLobby.users;
   const scores = users.map((user) => ({ user: user, score: 0 }));
   updatedLobby.game.scores = scores;
