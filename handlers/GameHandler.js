@@ -12,9 +12,16 @@ module.exports = (io, socket) => {
       io.to(lobbyId).emit("lobby:update", updatedLobby);
       if (game.options.timeLimit) {
         setTimeout(() => {
+          const lobby = lobbyManager.getLobby(lobbyId);
+          lobby.gameActive = false;
           let gameState = lobbyManager.getLobbyGameState(lobbyId);
           gameState.isOver = true;
-          io.to(lobbyId).emit("game:time-limit-reached", gameState);
+          lobby.game = gameState;
+          const users = lobby.users.map((user) => {
+            return { ...user, ready: false };
+          });
+          lobby.users = users;
+          io.to(lobbyId).emit("game:ended", lobby);
         }, (game.options.timeLimit + 5) * 1000);
       }
     }
@@ -26,10 +33,21 @@ module.exports = (io, socket) => {
 
       const updatedGame = updateGame(gameState, setToScore, user);
       lobbyManager.setLobbyGameState(lobbyId, updatedGame);
+
       callback(true);
+      if (updateGame.isOver) {
+        const lobby = lobbyManager.getLobby(lobbyId);
+        lobby.gameActive = false;
+        lobby.game = game;
+        const users = lobby.users.map((user) => {
+          return { ...user, ready: false };
+        });
+        lobby.users = users;
+        io.to(lobbyId).emit("game:ended", lobby);
+      }
       io.to(lobbyId).emit("game:update", updatedGame);
     } catch (e) {
-      console.log(e.message);
+      console.error(e.message);
       callback(false);
     }
   };
