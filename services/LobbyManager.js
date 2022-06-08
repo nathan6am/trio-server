@@ -162,7 +162,6 @@ exports.startCurrentGame = (lobbyId) => {
   updatedLobby["gameActive"] = true;
   updatedLobby.game.timeStamp = timeStamp;
   console.log(updatedLobby.game.timeStamp);
-  if (timeLimit) updatedLobby.game.endTime = endTime;
   return updatedLobby;
 };
 
