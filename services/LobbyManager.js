@@ -112,7 +112,7 @@ exports.setUserReady = (lobbyId, user, readyState) => {
 
   //Verify user belongs to lobby
   let updatedLobby = lobbies[lobbyIndex];
-
+  console.log(updatedLobby);
   const userIndex =
     updatedLobby.users &&
     updatedLobby.users.findIndex((entry) => entry.socketId === user.socketId);
