@@ -103,7 +103,7 @@ exports.leaveLobby = (user, lobbyId) => {
   return lobbies[lobbyIndex];
 };
 
-exports.setUserReady = (lobbyId, user, readyState) => {
+exports.setUserReady = (lobbyId, socketId, readyState) => {
   const lobbyIndex = lobbies.findIndex((lobby) => lobby.id === lobbyId);
 
   //Verify if lobby exists
@@ -112,11 +112,13 @@ exports.setUserReady = (lobbyId, user, readyState) => {
 
   //Verify user belongs to lobby
   let updatedLobby = lobbies[lobbyIndex];
-  console.log(updatedLobby);
-  const userIndex =
-    updatedLobby.users &&
-    updatedLobby.users.findIndex((entry) => entry.socketId === user.socketId);
-  if (userIndex === -1 || !userIndex)
+
+  const userIndex = updatedLobby.users.findIndex(
+    (entry) => entry.socketId === socketId
+  );
+  console.log(updatedLobby.users);
+  console.log(userIndex);
+  if (userIndex === -1)
     throw new Error(`user with id ${user.socketId} is not in this lobby`);
 
   updatedLobby.users[userIndex] = {
