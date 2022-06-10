@@ -92,7 +92,12 @@ module.exports = (io, socket) => {
 
   const setReady = ({ user, lobbyId, readyState }, callback) => {
     try {
-      const updatedLobby = lobbyManager.setUserReady(lobbyId, user, readyState);
+      const updatedLobby = lobbyManager.setUserReady(
+        lobbyId,
+        user,
+        readyState,
+        socket.id
+      );
       if (updatedLobby) {
         io.to(lobbyId).emit("lobby:update", updatedLobby);
         callback(true);

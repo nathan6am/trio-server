@@ -103,7 +103,7 @@ exports.leaveLobby = (user, lobbyId) => {
   return lobbies[lobbyIndex];
 };
 
-exports.setUserReady = (lobbyId, socketId, readyState) => {
+exports.setUserReady = (lobbyId, user, readyState, socketId) => {
   const lobbyIndex = lobbies.findIndex((lobby) => lobby.id === lobbyId);
 
   //Verify if lobby exists
