@@ -113,10 +113,10 @@ exports.setUserReady = (lobbyId, user, readyState) => {
   //Verify user belongs to lobby
   let updatedLobby = lobbies[lobbyIndex];
 
-  const userIndex = updatedLobby.users.findIndex(
-    (entry) => entry.socketId === user.socketId
-  );
-  if (userIndex === -1)
+  const userIndex =
+    updatedLobby.users &&
+    updatedLobby.users.findIndex((entry) => entry.socketId === user.socketId);
+  if (userIndex === -1 || !userIndex)
     throw new Error(`user with id ${user.socketId} is not in this lobby`);
 
   updatedLobby.users[userIndex] = {

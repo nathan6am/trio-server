@@ -5,11 +5,11 @@ module.exports = (io, socket) => {
   const startGame = (lobbyId, callback) => {
     try {
       let updatedLobby = lobbyManager.startCurrentGame(lobbyId, socket.id);
-      const game = updatedLobby.game;
       if (!updatedLobby) {
         callback(false);
       } else {
         callback(true);
+        const game = updatedLobby.game;
         io.to(lobbyId).emit("lobby:update", updatedLobby);
         if (game.options.timeLimit) {
           setTimeout(() => {
@@ -40,7 +40,7 @@ module.exports = (io, socket) => {
       lobbyManager.setLobbyGameState(lobbyId, updatedGame);
 
       callback(true);
-      if (updateGame.isOver) {
+      if (updatedGame.isOver) {
         const lobby = lobbyManager.getLobby(lobbyId);
         lobby.gameActive = false;
         lobby.game = game;
