@@ -41,7 +41,7 @@ exports.playAgian = (lobbyId) => {
     updatedLobby.storedOptions.deckOptions
   );
 };
-exports.joinLobby = (user, lobbyId) => {
+exports.joinLobby = (user, lobbyId, socketId) => {
   const lobbyIndex = lobbies.findIndex((lobby) => lobby.id === lobbyId);
 
   //Verify if lobby exists
@@ -62,9 +62,9 @@ exports.joinLobby = (user, lobbyId) => {
   //TODO: Find and return all other lobbies user may belong to to force remove upon join
 
   //Add user and return new lobby object
-  updatedLobby.users.push({ ...user, ready: false });
+  updatedLobby.users.push({ ...user, ready: false, socketId: socketId });
   lobbies[lobbyIndex] = updatedLobby;
-  return lobbies[lobbyIndex];
+  return updatedLobby;
 };
 exports.removeLobby = (lobbyId) => {
   const lobbyIndex = lobbies.findIndex((lobby) => lobby.id === lobbyId);
