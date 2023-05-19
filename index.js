@@ -8,6 +8,9 @@ const registerLobbyHandlers = require("./handlers/LobbyHandler.js");
 const registerGameHandlers = require("./handlers/GameHandler.js");
 const registerDisconnectHandler = require("./handlers/DisconnectHandler.js");
 const port = process.env.PORT || 8000;
+app.get("/ping", (req, res) => {
+  res.send("pong");
+});
 const io = new Server(httpServer, {
   cors: {
     origin: "*", //your website origin
