@@ -10,7 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "express": "^4.17.1",
+    "https": "^1.0.0",
     "react-time-sync": "^5.2.1",
     "socket.io": "^4.5.1"
   }
