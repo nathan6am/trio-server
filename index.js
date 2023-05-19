@@ -6,7 +6,8 @@ const app = express();
 const httpServer = createServer(app);
 const registerLobbyHandlers = require("./handlers/LobbyHandler.js");
 const registerGameHandlers = require("./handlers/GameHandler.js");
-
+const registerDisconnectHandler = require("./handlers/DisconnectHandler.js");
+const port = process.env.PORT || 8000;
 const io = new Server(httpServer, {
   cors: {
     origin: "*", //your website origin
@@ -20,10 +21,12 @@ io.on("connection", (socket) => {
   socket.on("user:setDisplayName", (displayName) => {
     console.log(displayName);
   });
+
   registerLobbyHandlers(io, socket);
   registerGameHandlers(io, socket);
+  registerDisconnectHandler(io, socket);
 });
 
-httpServer.listen(8000, () => {
-  console.log("listening on port 8000");
+httpServer.listen(port, () => {
+  console.log(`listening on port: ${port}`);
 });

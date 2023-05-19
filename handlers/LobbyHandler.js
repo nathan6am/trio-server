@@ -18,7 +18,7 @@ module.exports = (io, socket) => {
 
   const joinLobby = ({ user, lobbyId }, callback) => {
     try {
-      const lobby = lobbyManager.joinLobby(user, lobbyId);
+      const lobby = lobbyManager.joinLobby(user, lobbyId, socket.id);
       const rooms = Array.from(socket.rooms);
       if (rooms && rooms.length) {
         rooms.forEach((room) => {
@@ -92,14 +92,20 @@ module.exports = (io, socket) => {
 
   const setReady = ({ user, lobbyId, readyState }, callback) => {
     try {
-      const updatedLobby = lobbyManager.setUserReady(lobbyId, user, readyState);
+      const updatedLobby = lobbyManager.setUserReady(
+        lobbyId,
+        user,
+        readyState,
+        socket.id
+      );
       if (updatedLobby) {
-        callback(true);
         io.to(lobbyId).emit("lobby:update", updatedLobby);
+        callback(true);
       } else {
         callback(false);
       }
-    } catch {
+    } catch (e) {
+      console.error(e.message);
       callback(false);
     }
   };

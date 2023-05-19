@@ -41,7 +41,7 @@ exports.playAgian = (lobbyId) => {
     updatedLobby.storedOptions.deckOptions
   );
 };
-exports.joinLobby = (user, lobbyId) => {
+exports.joinLobby = (user, lobbyId, socketId) => {
   const lobbyIndex = lobbies.findIndex((lobby) => lobby.id === lobbyId);
 
   //Verify if lobby exists
@@ -62,9 +62,9 @@ exports.joinLobby = (user, lobbyId) => {
   //TODO: Find and return all other lobbies user may belong to to force remove upon join
 
   //Add user and return new lobby object
-  updatedLobby.users.push({ ...user, ready: false });
+  updatedLobby.users.push({ ...user, ready: false, socketId: socketId });
   lobbies[lobbyIndex] = updatedLobby;
-  return lobbies[lobbyIndex];
+  return updatedLobby;
 };
 exports.removeLobby = (lobbyId) => {
   const lobbyIndex = lobbies.findIndex((lobby) => lobby.id === lobbyId);
@@ -91,7 +91,7 @@ exports.leaveLobby = (user, lobbyId) => {
       (existingUser) => user.socketId === existingUser.socketId
     )
   )
-    throw new Error(`user with id ${user.socketId} is not in this lobby`);
+    console.error(`user with id ${user.socketId} is not in this lobby`);
 
   //Remove user and return new lobby object
   const updatedUsers = updatedLobby.users.filter(
@@ -103,7 +103,7 @@ exports.leaveLobby = (user, lobbyId) => {
   return lobbies[lobbyIndex];
 };
 
-exports.setUserReady = (lobbyId, user, readyState) => {
+exports.setUserReady = (lobbyId, user, readyState, socketId) => {
   const lobbyIndex = lobbies.findIndex((lobby) => lobby.id === lobbyId);
 
   //Verify if lobby exists
@@ -114,8 +114,10 @@ exports.setUserReady = (lobbyId, user, readyState) => {
   let updatedLobby = lobbies[lobbyIndex];
 
   const userIndex = updatedLobby.users.findIndex(
-    (entry) => entry.socketId === user.socketId
+    (entry) => entry.socketId === socketId
   );
+  console.log(updatedLobby.users);
+  console.log(userIndex);
   if (userIndex === -1)
     throw new Error(`user with id ${user.socketId} is not in this lobby`);
 
@@ -155,19 +157,22 @@ exports.startCurrentGame = (lobbyId) => {
 
   let updatedLobby = lobbies[lobbyIndex];
   const timeLimit = updatedLobby.game.options.timeLimit;
-  const startTime = new Date();
-  startTime.setSeconds(startTime.getSeconds() + 5);
-  const endTime = new Date();
-  endTime.setSeconds(endTime.getSeconds() + timeLimit + 5);
+  const timeStamp = new Date();
   const users = updatedLobby.users;
   const scores = users.map((user) => ({ user: user, score: 0 }));
   updatedLobby.game.scores = scores;
   updatedLobby["gameActive"] = true;
-  updatedLobby.game.startTime = startTime;
-  if (timeLimit) updatedLobby.game.endTime = endTime;
+  updatedLobby.game.timeStamp = timeStamp;
+  console.log(updatedLobby.game.timeStamp);
   return updatedLobby;
 };
 
 exports.getLobby = (lobbyId) => {
   return lobbies.find((lobby) => (lobby.id = lobbyId));
+};
+
+exports.findLobbyByUser = (socketId) => {
+  return lobbies.find((lobby) =>
+    lobby.users.some((user) => user.socketId === socketId)
+  );
 };

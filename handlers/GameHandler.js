@@ -3,20 +3,32 @@ const { updateGame } = require("../services/GameManager");
 
 module.exports = (io, socket) => {
   const startGame = (lobbyId, callback) => {
-    let updatedLobby = lobbyManager.startCurrentGame(lobbyId, socket.id);
-    const game = updatedLobby.game;
-    if (!updatedLobby) {
-      callback(false);
-    } else {
-      callback(true);
-      io.to(lobbyId).emit("lobby:update", updatedLobby);
-      if (game.options.timeLimit) {
-        setTimeout(() => {
-          let gameState = lobbyManager.getLobbyGameState(lobbyId);
-          gameState.isOver = true;
-          io.to(lobbyId).emit("game:time-limit-reached", gameState);
-        }, (game.options.timeLimit + 5) * 1000);
+    try {
+      let updatedLobby = lobbyManager.startCurrentGame(lobbyId, socket.id);
+      if (!updatedLobby) {
+        callback(false);
+      } else {
+        callback(true);
+        const game = updatedLobby.game;
+        io.to(lobbyId).emit("lobby:update", updatedLobby);
+        if (game.options.timeLimit) {
+          setTimeout(() => {
+            const lobby = lobbyManager.getLobby(lobbyId);
+            lobby.gameActive = false;
+            let gameState = lobbyManager.getLobbyGameState(lobbyId);
+            gameState.isOver = true;
+            lobby.game = gameState;
+            const users = lobby.users.map((user) => {
+              return { ...user, ready: false };
+            });
+            lobby.users = users;
+            io.to(lobbyId).emit("game:ended", lobby);
+          }, (game.options.timeLimit + 10) * 1000);
+        }
       }
+    } catch (e) {
+      console.error(e.message);
+      callback(false);
     }
   };
 
@@ -26,10 +38,21 @@ module.exports = (io, socket) => {
 
       const updatedGame = updateGame(gameState, setToScore, user);
       lobbyManager.setLobbyGameState(lobbyId, updatedGame);
+
       callback(true);
+      if (updatedGame.isOver) {
+        const lobby = lobbyManager.getLobby(lobbyId);
+        lobby.gameActive = false;
+        lobby.game = game;
+        const users = lobby.users.map((user) => {
+          return { ...user, ready: false };
+        });
+        lobby.users = users;
+        io.to(lobbyId).emit("game:ended", lobby);
+      }
       io.to(lobbyId).emit("game:update", updatedGame);
     } catch (e) {
-      console.log(e.message);
+      console.error(e.message);
       callback(false);
     }
   };
