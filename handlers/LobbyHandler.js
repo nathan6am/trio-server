@@ -62,6 +62,7 @@ module.exports = (io, socket) => {
         io.in(lobbyId).socketsLeave(lobbyId);
       } else {
         const updatedLobby = lobbyManager.leaveLobby(user, lobbyId);
+        callback(true);
         const rooms = Array.from(socket.rooms);
         if (rooms && rooms.length) {
           rooms.forEach((room) => {
@@ -71,7 +72,6 @@ module.exports = (io, socket) => {
           });
         }
         io.to(lobbyId).emit("lobby:update", updatedLobby);
-        callback(true);
       }
     } catch (e) {
       callback(false);
