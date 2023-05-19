@@ -7,7 +7,7 @@ const httpServer = createServer(app);
 const registerLobbyHandlers = require("./handlers/LobbyHandler.js");
 const registerGameHandlers = require("./handlers/GameHandler.js");
 const registerDisconnectHandler = require("./handlers/DisconnectHandler.js");
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 3000;
 app.get("/ping", (req, res) => {
   res.send("pong");
 });
